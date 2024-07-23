@@ -6,6 +6,8 @@ const Chat = () => {
   const socket = useMemo(() => io("http://localhost:5000/"), []);
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const { name, room } = queryString.parse(window.location.search);
@@ -25,6 +27,14 @@ const Chat = () => {
       socket.off();
     };
   }, []);
+
+  useEffect(() => {
+    socket.on("message", (message) => {
+      setMessages([...messages, message]);
+    });
+  }, [messages]);
+
+  // function for sending messages
 
   return <div>Chat</div>;
 };
