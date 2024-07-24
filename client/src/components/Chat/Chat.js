@@ -20,23 +20,45 @@ const Chat = () => {
     setRoom(room);
 
     // console.log(socket);
-    socket.emit("join", { name, room }, () => {});
+    socket.emit("join", { name, room }, (error) => {
+      console.log(error);
+    });
 
     return () => {
-      socket.emit("disconnect");
+      socket.disconnect();
       socket.off();
     };
   }, []);
 
   useEffect(() => {
     socket.on("message", (message) => {
+      console.log(message);
       setMessages([...messages, message]);
     });
   }, [messages]);
 
   // function for sending messages
 
-  return <div>Chat</div>;
+  const sendMessage = (e) => {
+    e.preventDefault();
+    if (message) {
+      socket.emit("sendMessage", message, () => setMessage(""));
+    }
+  };
+
+  console.log(message, messages);
+
+  return (
+    <div className="outerContainer">
+      <div className="container">
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyUp={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default Chat;
